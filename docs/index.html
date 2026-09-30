@@ -90,7 +90,7 @@
 
     <div class="info-panel">
       <h3 id="stepTitle">Adım 1: Ham Görsel Alınır</h3>
-      <p id="stepDesc">Bir fotoğraf modele girdi olarak verilir. Bilgisayar için bu, RGB (Kırmızı, Yeşil, Mavi) renk değerlerinden oluşan dev bir sayı matrisidir — 320×320 piksellik bu görselde 307.200 renk sayısı var.</p>
+      <p id="stepDesc">Bir fotoğraf modele girdi olarak verilir. Bilgisayar için bu, RGB (Kırmızı, Yeşil, Mavi) renk değerlerinden oluşan dev bir sayı matrisidir. 320×320 piksellik bu görselde 307.200 renk sayısı var.</p>
       <div class="code-view" id="codeView">Girdi: Image(H=320, W=320, C=3)
 Toplam sayı: 320 x 320 x 3 = 307.200
 Durum: Pikseller henüz anlamlandırılmadı.</div>
@@ -149,14 +149,14 @@ function getPatchAvgColor(row, col) {
 const steps = [
   {
     title: "Adım 1: Ham Görsel Alınır",
-    desc: "Bir fotoğraf modele girdi olarak verilir. Bilgisayar için bu, RGB renk değerlerinden oluşan dev bir sayı matrisidir — 320×320 piksellik bu görselde 307.200 renk sayısı var. Henüz hiçbir anlam çıkarılmadı.",
+    desc: "Bir fotoğraf modele girdi olarak verilir. Bilgisayar için bu, RGB renk değerlerinden oluşan dev bir sayı matrisidir 320×320 piksellik bu görselde 307.200 renk sayısı var. Henüz hiçbir anlam çıkarılmadı.",
     code: "Girdi: Image(H=320, W=320, C=3)\nToplam sayı: 320 x 320 x 3 = 307.200\nDurum: Pikseller henüz anlamlandırılmadı.",
     note: "💡 <b>Gerçek fotoğraf:</b> Bu demodaki köpek fotoğrafı gerçek bir görsel. Patch'lere bölme ve renk hesaplamaları da bu fotoğrafın gerçek piksel verisi üzerinden, canlı olarak yapılıyor.",
     render: () => { drawBase(); document.getElementById('zoomArea').innerHTML=''; document.getElementById('tokenArea').innerHTML=''; document.getElementById('llmFlowArea').innerHTML=''; }
   },
   {
     title: "Adım 2: Patch'lere Bölme (Patch Extraction)",
-    desc: "Vision Transformer mantığı burada başlar: görsel, eşit kare parçalara (patch) bölünür — gerçek SigLIP-So400m'de bunlar 14×14 piksellik kareler. Bu demoda görebilmen için 8×8'lik bir ızgara (" + (GRID*GRID) + " patch) kullanıyoruz. Tıpkı bir cümlenin kelimelere bölünmesi gibi — her kare, modelin \"okuyacağı\" bir birim oluyor.",
+    desc: "Vision Transformer mantığı burada başlar: görsel, eşit kare parçalara (patch) bölünür. Normalde SigLIP-So400m'de bunlar 14×14 piksellik kareler. Bu demoda görebilmemiz için 8×8'lik bir ızgara (" + (GRID*GRID) + " patch) kullanıyoruz. Tıpkı bir cümlenin kelimelere bölünmesi gibi. Her kare, modelin \"okuyacağı\" bir birim oluyor.",
     code: "İşlem: " + GRID + "x" + GRID + " Izgara Bölümleme\nPatch boyutu: " + PATCH_SIZE + "x" + PATCH_SIZE + " piksel\nToplam patch: " + (GRID*GRID) + " (gerçek modelde 14x14'lük, 256-4096 patch)",
     note: "🔍 <b>Püf Noktası:</b> Bir metin modelinde 'kelime' neyse, Vision Encoder için 'patch' odur. Turuncu çerçeveli kare, bir sonraki adımda yakından inceleyeceğimiz patch.",
     render: () => {
@@ -167,7 +167,7 @@ const steps = [
   },
   {
     title: "Adım 3: Vektörleştirme (Embedding)",
-    desc: "Seçilen patch, matematiksel bir sayı listesine (embedding vektörüne) dönüştürülür. İlk üç sayı, bu patch'in <span class='real-tag'>GERÇEK</span> ortalama kırmızı/yeşil/mavi renk değerleri — canvas'tan gerçekten okunuyor. Gerçek SigLIP'te bu vektör 1152 boyutlu ve çok daha karmaşık örüntüleri (kenar, doku, gölge) yakalıyor; buradaki devamı <span class='illus-tag'>örnek</span> amaçlı.",
+    desc: "Seçilen patch, matematiksel bir sayı listesine (embedding vektörüne) dönüştürülür. İlk üç sayı, bu patch'in <span class='real-tag'>GERÇEK</span> ortalama kırmızı/yeşil/mavi renk değerleri. Gerçek SigLIP'te bu vektör 1152 boyutlu ve çok daha karmaşık örüntüleri (kenar, doku, gölge) yakalıyor; burada <span class='illus-tag'>örnek</span> amaçlıdır.",
     code: "",
     note: "⚙️ <b>SigLIP Farkı:</b> SigLIP, her patch'i diğerleriyle karşılaştırmadan (sigmoid ile), hızlı ve bağımsız şekilde vektöre çevirir.",
     render: () => {
@@ -188,9 +188,9 @@ const steps = [
   },
   {
     title: "Adım 4: Gemma 2'ye (Dil Modeline) Aktarım",
-    desc: "Artık ortada piksel yok — her patch kendi vektörüne dönüştü ve hepsi bir dizi halinde Gemma 2'ye gönderiliyor. Dil modeli bu " + (GRID*GRID) + " \"görsel kelimeyi\" ve senin yazdığın metin promptunu birlikte okuyup cevabı üretiyor.",
+    desc: "Artık ortada piksel yok. Her patch kendi vektörüne dönüştü ve hepsi bir dizi halinde Gemma 2'ye gönderiliyor. Dil modeli bu " + (GRID*GRID) + " parça görseli, yani \"görsel kelimeleri\", ve yazdığımız metin promptunu birlikte okuyup cevabı üretiyor.",
     code: "Encoder çıktısı: " + (GRID*GRID) + " adet vektör (gerçek modelde 256-4096 arası)\nLinear projection >> Gemma 2 Decoder\nPrompt: \"describe en\"",
-    note: "🚀 <b>Not:</b> Aşağıdaki çıktı metni, gerçek bir PaliGemma 2 API çağrısı değil — sürecin nasıl sonuçlandığını göstermek için örnek bir cevap.",
+    note: "",
     render: () => {
       drawBase(); drawGrid();
       document.getElementById('zoomArea').innerHTML='';
